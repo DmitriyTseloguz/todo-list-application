@@ -67,7 +67,7 @@ func getTasks(response http.ResponseWriter, request *http.Request) {
 
 	response.Header().Set("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
-	response.Write(jsonTasks)
+	_, _ = response.Write(jsonTasks)
 }
 
 func getTask(response http.ResponseWriter, request *http.Request) {
@@ -107,6 +107,11 @@ func createTasks(response http.ResponseWriter, request *http.Request) {
 
 	if unmarshalError != nil {
 		http.Error(response, unmarshalError.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if _, isExist := tasks[task.ID]; isExist {
+		http.Error(response, "There is already such a task in the task list", http.StatusBadRequest)
 		return
 	}
 
